@@ -1,19 +1,25 @@
 import { Plugin } from "obsidian";
 import { toUpperCase, toLowerCase, toTitleCase } from "./text";
+import { TextTransformSettingsTab } from "./settings";
 
 interface TextTransformSettings {
-    mySetting: string;
+    titleCaseIgnore: string[];
+    wordBoundaryChars: string[];
 }
 
 const DEFAULT_SETTINGS: TextTransformSettings = {
-    mySetting: "default",
+    titleCaseIgnore: ["a", "an", "and", "as", "at", "but", "by", "for", "if", "in", "into", "nor", "of", "on", "or", "the", "to"],
+    wordBoundaryChars: [],
 };
 
 export default class TextTransform extends Plugin {
     settings: TextTransformSettings;
 
     async onload() {
+        // Load settings
         await this.loadSettings();
+        // Set up settings tab
+        this.addSettingTab(new TextTransformSettingsTab(this.app, this));
 
         // Add default commands for transforming cases
         this.addCommand({
@@ -48,7 +54,7 @@ export default class TextTransform extends Plugin {
                     key: "U",
                 },
             ],
-            editorCallback: toTitleCase,
+            editorCallback: (editor) => toTitleCase(editor, this),
         });
 
         console.log("Text Transform plugin loaded");
