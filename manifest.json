@@ -3,7 +3,7 @@
     "name": "Text Transform",
     "version": "1.0.0",
     "minAppVersion": "1.0.0",
-    "description": "This plugin adds options to transform text to different casings using keyboard shortcuts.",
+    "description": "Transform text to different casings using the command palette or keyboard shortcuts.",
     "author": "ipshing",
     "authorUrl": "https://github.com/ipshing",
     "isDesktopOnly": false

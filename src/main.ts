@@ -23,37 +23,19 @@ export default class TextTransform extends Plugin {
 
         // Add default commands for transforming cases
         this.addCommand({
-            id: "text-transform-uppercase",
+            id: "uppercase",
             name: "Transform to Uppercase",
-            hotkeys: [
-                {
-                    modifiers: ["Mod", "Shift"],
-                    key: "U",
-                },
-            ],
             editorCallback: toUpperCase,
         });
 
         this.addCommand({
-            id: "text-transform-Lowercase",
+            id: "lowercase",
             name: "Transform to Lowercase",
-            hotkeys: [
-                {
-                    modifiers: ["Mod"],
-                    key: "U",
-                },
-            ],
             editorCallback: toLowerCase,
         });
         this.addCommand({
-            id: "text-transform-title-case",
+            id: "title-case",
             name: "Transform to Title Case",
-            hotkeys: [
-                {
-                    modifiers: ["Mod", "Alt"],
-                    key: "U",
-                },
-            ],
             editorCallback: (editor) => toTitleCase(editor, this),
         });
 
