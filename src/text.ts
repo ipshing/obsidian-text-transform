@@ -1,21 +1,5 @@
-import { Editor, MarkdownView } from "obsidian";
+import { Editor } from "obsidian";
 import TextTransform from "./main";
-
-export function toUpperCase(editor: Editor, view: MarkdownView) {
-    const from = editor.getCursor("from");
-    const to = editor.getCursor("to");
-    const selection = editor.getSelection();
-    editor.replaceSelection(selection.toUpperCase());
-    editor.setSelection(from, to);
-}
-
-export function toLowerCase(editor: Editor, view: MarkdownView) {
-    const from = editor.getCursor("from");
-    const to = editor.getCursor("to");
-    const selection = editor.getSelection();
-    editor.replaceSelection(selection.toLowerCase());
-    editor.setSelection(from, to);
-}
 
 export function toTitleCase(editor: Editor, plugin: TextTransform) {
     // Get the selected text

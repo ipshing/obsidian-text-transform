@@ -1,5 +1,5 @@
-import { Plugin } from "obsidian";
-import { toUpperCase, toLowerCase, toTitleCase } from "./text";
+import { Editor, Plugin } from "obsidian";
+import { toTitleCase } from "./text";
 import { TextTransformSettingsTab } from "./settings";
 
 interface TextTransformSettings {
@@ -24,14 +24,24 @@ export default class TextTransform extends Plugin {
         // Add default commands for transforming cases
         this.addCommand({
             id: "uppercase",
-            name: "Transform to Uppercase",
-            editorCallback: toUpperCase,
+            name: "Transform to UPPERCASE",
+            editorCallback: (editor) => {
+                if (editor.hasFocus()) {
+                    const selection = editor.getSelection();
+                    this.replaceSelection(editor, selection.toLocaleUpperCase());
+                }
+            },
         });
 
         this.addCommand({
             id: "lowercase",
-            name: "Transform to Lowercase",
-            editorCallback: toLowerCase,
+            name: "Transform to lowercase",
+            editorCallback: (editor) => {
+                if (editor.hasFocus()) {
+                    const selection = editor.getSelection();
+                    this.replaceSelection(editor, selection.toLocaleLowerCase());
+                }
+            },
         });
         this.addCommand({
             id: "title-case",
@@ -52,5 +62,11 @@ export default class TextTransform extends Plugin {
 
     async saveSettings() {
         await this.saveData(this.settings);
+    }
+
+    replaceSelection(editor: Editor, newText: string) {
+        const from = editor.getCursor("from");
+        editor.replaceSelection(newText);
+        editor.setSelection(from, { ch: from.ch + newText.length, line: from.line });
     }
 }
