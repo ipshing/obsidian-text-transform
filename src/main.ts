@@ -1,5 +1,5 @@
 import { Editor, Plugin } from "obsidian";
-import { toTitleCase } from "./text";
+import { convertToTitleCase } from "./text";
 import { TextTransformSettingsTab } from "./settings";
 
 interface TextTransformSettings {
@@ -46,7 +46,13 @@ export default class TextTransform extends Plugin {
         this.addCommand({
             id: "title-case",
             name: "Transform to Title Case",
-            editorCallback: (editor) => toTitleCase(editor, this),
+            editorCallback: (editor) => {
+                if (editor.hasFocus()) {
+                    let selection = editor.getSelection();
+                    selection = convertToTitleCase(selection, this.settings.wordBoundaryChars, this.settings.titleCaseIgnore);
+                    this.replaceSelection(editor, selection);
+                }
+            },
         });
 
         console.log("Text Transform plugin loaded");
