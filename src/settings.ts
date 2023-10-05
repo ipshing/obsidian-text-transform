@@ -18,7 +18,7 @@ export class TextTransformSettingsTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName("Title case exceptions")
-            .setDesc("Add words that will be ignored when transforming text to title case. Each entry must be separated by a comma or space. Entries are case-insensitive.")
+            .setDesc("These words will be ignored when transforming text to title case. Each entry must be separated by a comma or space. Entries are case-insensitive.")
             .addText((text) => {
                 // Set the value of the text box from the settings
                 text.setValue(this.plugin.settings.titleCaseIgnore.join(", "));
@@ -33,7 +33,7 @@ export class TextTransformSettingsTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName("Word boundary characters")
-            .setDesc("Add characters that will be used to determine word boundaries when transorming to title case. Spaces are always included.")
+            .setDesc("These characters will be used to determine word boundaries when transforming text. Spaces and tabs are always included.")
             .addText((text) => {
                 // Set the value of the text box from the settings
                 text.setValue(this.plugin.settings.wordBoundaryChars.join(""));
