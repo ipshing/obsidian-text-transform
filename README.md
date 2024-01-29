@@ -8,7 +8,10 @@ Select text in an editor and use one of the Text Transform commands from the Com
 For conversion to title case, there are overrides to ignore user-defined words as well as define characters other than a
 space to mark word boundaries.
 
-## Note
+___
 
-This is an experimental plugin to teach myself how to develop for Obsidian. At this time I am happy to look at bug fixes,
-but will not be adding new features or taking feature requests.
+## Donations
+
+If you like Text Transform and want to support further development of this and other plugins, please consider donating: https://ko-fi.com/ipshing
+
+[![ko-fi](https://storage.ko-fi.com/cdn/brandasset/kofi_bg_tag_dark.png)](https://ko-fi.com/ipshing)

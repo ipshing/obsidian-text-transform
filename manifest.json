@@ -6,5 +6,6 @@
     "description": "Transform text to different casings using the command palette or keyboard shortcuts.",
     "author": "ipshing",
     "authorUrl": "https://github.com/ipshing",
-    "isDesktopOnly": false
+    "isDesktopOnly": false,
+    "fundingUrl": "https://ko-fi.com/ipshing"
 }
