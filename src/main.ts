@@ -1,15 +1,20 @@
 import { Editor, EditorPosition, Plugin } from "obsidian";
 import { convertToTitleCase } from "./text";
 import { TextTransformSettingsTab } from "./settings";
+import { lt, valid } from "semver";
 
 interface TextTransformSettings {
     titleCaseIgnore: string[];
     wordBoundaryChars: string[];
+    version: string;
+    previousVersion: string;
 }
 
 const DEFAULT_SETTINGS: TextTransformSettings = {
     titleCaseIgnore: ["a", "an", "and", "as", "at", "but", "by", "for", "if", "in", "into", "nor", "of", "on", "or", "the", "to"],
     wordBoundaryChars: [],
+    version: "",
+    previousVersion: "",
 };
 
 export default class TextTransform extends Plugin {
@@ -18,6 +23,8 @@ export default class TextTransform extends Plugin {
     async onload() {
         // Load settings
         await this.loadSettings();
+        // Check version
+        await this.runVersionCheck();
         // Set up settings tab
         this.addSettingTab(new TextTransformSettingsTab(this.app, this));
 
@@ -89,6 +96,19 @@ export default class TextTransform extends Plugin {
 
     async saveSettings() {
         await this.saveData(this.settings);
+    }
+
+    async runVersionCheck() {
+        // Check previous version
+        if (!valid(this.settings.version)) this.settings.version = "1.0.0";
+        if (lt(this.settings.version, this.manifest.version)) {
+            // Run updates here
+
+            // Update version properties in settings
+            this.settings.previousVersion = this.settings.version;
+            this.settings.version = this.manifest.version;
+            await this.saveSettings();
+        }
     }
 
     getSelectionInfo(editor: Editor, ignoreBoundaryChars = false): SelectionInfo {
