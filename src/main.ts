@@ -68,7 +68,7 @@ export default class TextTransform extends Plugin {
             editorCallback: (editor) => {
                 if (editor.hasFocus()) {
                     const info = this.getSelectionInfo(editor);
-                    editor.setSelection(info.fromSel, info.toSel);
+                    editor.setSelection(info.wordFrom, info.wordTo);
                 }
             },
         });
@@ -78,7 +78,7 @@ export default class TextTransform extends Plugin {
             editorCallback: (editor) => {
                 if (editor.hasFocus()) {
                     const info = this.getSelectionInfo(editor, true);
-                    editor.setSelection(info.fromSel, info.toSel);
+                    editor.setSelection(info.wordFrom, info.wordTo);
                 }
             },
         });
@@ -112,44 +112,60 @@ export default class TextTransform extends Plugin {
     }
 
     getSelectionInfo(editor: Editor, ignoreBoundaryChars = false): SelectionInfo {
-        // check if selection has a length > 0
+        // Get selected text/positions from editor
         let selectedText = editor.getSelection();
-        const fromOrig = editor.getCursor("from");
-        const toOrig = editor.getCursor("to");
-        // Clone original positions
-        const fromSel = structuredClone(fromOrig);
-        const toSel = structuredClone(toOrig);
-        // if === 0, get the word the cursor is in
-        if (selectedText.length === 0) {
-            // Set up boundary chars (include space, tab)
-            const chars = [" ", "\t"];
-            if (!ignoreBoundaryChars) {
-                chars.push(...this.settings.wordBoundaryChars);
-            }
-            // Get line text
-            const lineText = editor.getLine(fromOrig.line);
-            fromSel.ch = 0;
-            toSel.ch = lineText.length;
-            // Read backward from cursor pos to nearest boundary char
-            for (let i = fromOrig.ch - 1; i >= 0; i--) {
-                const char = lineText[i];
-                if (chars.contains(char)) {
-                    fromSel.ch = i + 1;
-                    break;
-                }
-            }
-            // Read forward to next boundary char
-            for (let i = toOrig.ch; i < lineText.length; i++) {
-                const char = lineText[i];
-                if (chars.contains(char)) {
-                    toSel.ch = i;
-                    break;
-                }
-            }
-            // Get selected text based on modified range
-            selectedText = editor.getRange(fromSel, toSel);
+        const originalFrom = editor.getCursor("from");
+        const originalTo = editor.getCursor("to");
+
+        // Determine from/to positions for the whole word
+        // (regardless of selected text)
+        const wordFrom = structuredClone(originalFrom);
+        const wordTo = structuredClone(originalTo);
+        // Set up boundary chars (include space, tab)
+        const boundaryChars = [" ", "\t"];
+        if (!ignoreBoundaryChars) {
+            boundaryChars.push(...this.settings.wordBoundaryChars);
         }
-        return { selectedText, fromOrig, toOrig, fromSel, toSel };
+        // Get line text
+        const lineText = editor.getLine(originalFrom.line);
+        // Read backward from cursor pos to nearest boundary char
+        for (let i = originalFrom.ch - 1; i >= 0; i--) {
+            const char = lineText[i];
+            if (boundaryChars.contains(char)) {
+                wordFrom.ch = i + 1;
+                break;
+            }
+        }
+        // Read forward to next boundary char
+        for (let i = originalTo.ch; i < lineText.length; i++) {
+            const char = lineText[i];
+            if (boundaryChars.contains(char)) {
+                wordTo.ch = i;
+                break;
+            }
+        }
+
+        // Start selected positions using original positions
+        let selectedFrom = structuredClone(originalFrom);
+        let selectedTo = structuredClone(originalTo);
+        // Use whole word positions if no text was selected
+        if (selectedText.length == 0) {
+            selectedFrom = structuredClone(wordFrom);
+            selectedTo = structuredClone(wordTo);
+        }
+
+        // Get selected text based on modified range
+        selectedText = editor.getRange(selectedFrom, selectedTo);
+
+        return {
+            selectedText,
+            originalFrom: originalFrom,
+            originalTo: originalTo,
+            selectedFrom: selectedFrom,
+            selectedTo: selectedTo,
+            wordFrom: wordFrom,
+            wordTo: wordTo,
+        };
     }
 
     replaceSelection(editor: Editor, newText: string, info: SelectionInfo) {
@@ -157,22 +173,24 @@ export default class TextTransform extends Plugin {
         const originalLength = editor.getSelection().length;
 
         // Replace the text using the specified range of the selected 'from' and 'to'
-        editor.replaceRange(newText, info.fromSel, info.toSel);
+        editor.replaceRange(newText, info.selectedFrom, info.selectedTo);
 
         // If text is highlighted, check if 'newText' is shorter than 'originalLength'
         if (originalLength > 0 && newText.length < originalLength) {
             // Move 'to' cursor back by the difference
-            info.toOrig.ch -= originalLength - newText.length;
+            info.originalTo.ch -= originalLength - newText.length;
         }
         // Reset selection (this will take care of no selected text, too)
-        editor.setSelection(info.fromOrig, info.toOrig);
+        editor.setSelection(info.originalFrom, info.originalTo);
     }
 }
 
 interface SelectionInfo {
     selectedText: string;
-    fromOrig: EditorPosition;
-    toOrig: EditorPosition;
-    fromSel: EditorPosition;
-    toSel: EditorPosition;
+    originalFrom: EditorPosition;
+    originalTo: EditorPosition;
+    selectedFrom: EditorPosition;
+    selectedTo: EditorPosition;
+    wordFrom: EditorPosition;
+    wordTo: EditorPosition;
 }
