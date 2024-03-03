@@ -1,6 +1,6 @@
 {
     "name": "obsidian-text-transform",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "Adds formatting features to transform text casing.",
     "main": "main.js",
     "scripts": {
