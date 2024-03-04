@@ -1,7 +1,7 @@
 {
     "id": "text-transform",
     "name": "Text Transform",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "minAppVersion": "1.0.0",
     "description": "Transform text to different casings using the command palette or keyboard shortcuts.",
     "author": "ipshing",
