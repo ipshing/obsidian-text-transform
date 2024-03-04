@@ -64,7 +64,7 @@ export default class TextTransform extends Plugin {
         // Add command for selecting a word
         this.addCommand({
             id: "select-word",
-            name: "Select Word",
+            name: "Select word",
             editorCallback: (editor) => {
                 if (editor.hasFocus()) {
                     const info = this.getSelectionInfo(editor);
@@ -74,11 +74,37 @@ export default class TextTransform extends Plugin {
         });
         this.addCommand({
             id: "select-word-ignore",
-            name: "Select Word (Ignore Boundary Characters setting)",
+            name: "Select word (ignore boundary characters setting)",
             editorCallback: (editor) => {
                 if (editor.hasFocus()) {
                     const info = this.getSelectionInfo(editor, true);
                     editor.setSelection(info.wordFrom, info.wordTo);
+                }
+            },
+        });
+
+        // Text manipulation
+        this.addCommand({
+            id: "delete-line",
+            name: "Delete line",
+            editorCallback: async (editor, context) => {
+                if (editor.hasFocus()) {
+                    // Get cursor position for selection
+                    const from = editor.getCursor("from");
+                    const to = editor.getCursor("to");
+                    // Determine new cursor position
+                    const newCursor: EditorPosition = { ch: editor.getCursor("head").ch, line: from.line };
+                    if (editor.getLine(to.line + 1).length < newCursor.ch) {
+                        newCursor.ch = editor.getLine(to.line + 1).length;
+                    }
+                    // Set selection to encompass entire line(s)
+                    from.ch = 0;
+                    to.ch = editor.getLine(to.line).length;
+                    // Replace with empty text then delete the line
+                    editor.replaceRange("", from, to);
+                    editor.exec("deleteLine");
+                    // Set cursor
+                    editor.setCursor(newCursor);
                 }
             },
         });
