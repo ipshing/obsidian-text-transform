@@ -87,7 +87,7 @@ export default class TextTransform extends Plugin {
         this.addCommand({
             id: "delete-line",
             name: "Delete line",
-            editorCallback: async (editor, context) => {
+            editorCallback: (editor) => {
                 if (editor.hasFocus()) {
                     // Get cursor position for selection
                     const from = editor.getCursor("from");
@@ -106,6 +106,42 @@ export default class TextTransform extends Plugin {
                     // Set cursor
                     editor.setCursor(newCursor);
                 }
+            },
+        });
+        this.addCommand({
+            id: "insert-line-above",
+            name: "Insert line above",
+            editorCallback: (editor) => {
+                if (!editor.hasFocus()) return;
+                // Get the cursor position using "head"
+                const pos = editor.getCursor("head");
+                // Get the full text of the line
+                const lineText = editor.getLine(pos.line);
+                // Get all white space at start of line
+                const i = lineText.search(/\S/);
+                const ws = i > -1 ? lineText.slice(0, i) : lineText;
+                // Add line above, matching the leading white space
+                editor.replaceRange(`${ws}\n`, { line: pos.line, ch: 0 });
+                // Move cursor
+                editor.setCursor({ line: pos.line, ch: ws.length });
+            },
+        });
+        this.addCommand({
+            id: "insert-line-below",
+            name: "Insert line below",
+            editorCallback: (editor) => {
+                if (!editor.hasFocus()) return;
+                // Get the cursor position using "head"
+                const pos = editor.getCursor("head");
+                // Get the full text of the line
+                const lineText = editor.getLine(pos.line);
+                // Get all white space at start of line
+                const i = lineText.search(/\S/);
+                const ws = i > -1 ? lineText.slice(0, i) : lineText;
+                // Add line below, matching the leading white space
+                editor.replaceRange(`\n${ws}`, { line: pos.line, ch: lineText.length });
+                // Move cursor
+                editor.setCursor({ line: pos.line + 1, ch: ws.length });
             },
         });
 
