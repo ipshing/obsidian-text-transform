@@ -197,6 +197,9 @@ export default class TextTransform extends Plugin {
                 wordFrom.ch = i + 1;
                 break;
             }
+            if (i == 0) {
+                wordFrom.ch = 0;
+            }
         }
         // Read forward to next boundary char
         for (let i = originalTo.ch; i < lineText.length; i++) {
@@ -204,6 +207,9 @@ export default class TextTransform extends Plugin {
             if (boundaryChars.contains(char)) {
                 wordTo.ch = i;
                 break;
+            }
+            if (i == lineText.length - 1) {
+                wordTo.ch = lineText.length;
             }
         }
 
