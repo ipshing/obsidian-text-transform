@@ -1,5 +1,5 @@
 import { Editor, EditorPosition, Plugin } from "obsidian";
-import { convertToTitleCase } from "./text";
+import { changeTextCase, TextCase } from "./text";
 import { TextTransformSettingsTab } from "./settings";
 import { lt, valid } from "semver";
 
@@ -55,7 +55,71 @@ export default class TextTransform extends Plugin {
             editorCallback: (editor) => {
                 if (editor.hasFocus()) {
                     const info = this.getSelectionInfo(editor);
-                    const newText = convertToTitleCase(info.selectedText, this.settings.wordBoundaryChars, this.settings.titleCaseIgnore);
+                    const newText = changeTextCase(info.selectedText, TextCase.TitleCase, this.settings.wordBoundaryChars, this.settings.titleCaseIgnore);
+                    this.replaceSelection(editor, newText, info);
+                }
+            },
+        });
+        this.addCommand({
+            id: "camel-case",
+            name: "Transform to camelCase",
+            editorCallback: (editor) => {
+                if (editor.hasFocus()) {
+                    const info = this.getSelectionInfo(editor);
+                    // Convert to
+                    const newText = changeTextCase(info.selectedText, TextCase.CamelCase, this.settings.wordBoundaryChars, this.settings.titleCaseIgnore);
+                    this.replaceSelection(editor, newText, info);
+                }
+            },
+        });
+        this.addCommand({
+            id: "pascal-case",
+            name: "Transform to PascalCase",
+            editorCallback: (editor) => {
+                if (editor.hasFocus()) {
+                    const info = this.getSelectionInfo(editor);
+                    const newText = changeTextCase(info.selectedText, TextCase.PascalCase, this.settings.wordBoundaryChars, this.settings.titleCaseIgnore);
+                    this.replaceSelection(editor, newText, info);
+                }
+            },
+        });
+        this.addCommand({
+            id: "snake-case",
+            name: "Transform to snake_case",
+            editorCallback: (editor) => {
+                if (editor.hasFocus()) {
+                    const info = this.getSelectionInfo(editor);
+                    const newText = info.selectedText
+                        // Replace white space with underscores;
+                        // consecutive white space chars get replaced
+                        // with a single underscore; leading/trailing
+                        // white space gets ignored
+                        .replace(/(?<=\S)\s+(?=\S)/g, "_")
+                        // Add an underscore before each capital letter
+                        // that is not preceeded by an underscore,
+                        // another capital letter or white space
+                        .replace(/(?<=\S)(?<=[^A-Z_])([A-Z])/g, "_$&")
+                        .toLocaleLowerCase();
+                    this.replaceSelection(editor, newText, info);
+                }
+            },
+        });
+        this.addCommand({
+            id: "kebab-case",
+            name: "Transform to kebab-case",
+            editorCallback: (editor) => {
+                if (editor.hasFocus()) {
+                    const info = this.getSelectionInfo(editor);
+                    const newText = info.selectedText
+                        // Replace white space with hyphens; consecutive
+                        // white space chars get replaced with a single
+                        // hyphen; leading/trailing white space gets ignored
+                        .replace(/(?<=\S)\s+(?=\S)/g, "-")
+                        // Add a hyphen before each capital letter
+                        // that is not preceeded by a hyphen,
+                        // another capital letter or white space
+                        .replace(/(?<=\S)(?<=[^A-Z-])([A-Z])/g, "-$&")
+                        .toLocaleLowerCase();
                     this.replaceSelection(editor, newText, info);
                 }
             },

@@ -1,14 +1,27 @@
-export function convertToTitleCase(text: string, wordBoundaryChars: string[], ignore: string[]): string {
+export enum TextCase {
+    TitleCase,
+    CamelCase,
+    PascalCase,
+}
+
+export function changeTextCase(text: string, newCase: TextCase, wordBoundaryChars: string[], ignore: string[]): string {
     // Add space and tab to wordBoundaryChars
     wordBoundaryChars.push(" ", "\t");
 
     let transformed = "";
     let word = "";
+    let isFirst = true;
     // Iterate the characters and build each word
     for (const char of text) {
         if (wordBoundaryChars.includes(char)) {
             // push 'word' to 'transformed'
-            transformed += convertWord(word, ignore);
+            if (newCase == TextCase.CamelCase && isFirst && word.length > 0) {
+                // First word needs to be lowercase if 'camelCase'
+                transformed += word.toLocaleLowerCase();
+                isFirst = false;
+            } else {
+                transformed += wordToTitleCase(word, ignore);
+            }
             // push 'char' to 'transformed'
             transformed += char;
             // clear 'word'
@@ -19,12 +32,12 @@ export function convertToTitleCase(text: string, wordBoundaryChars: string[], ig
         }
     }
     // Push 'word' one last time
-    transformed += convertWord(word, ignore);
+    transformed += wordToTitleCase(word, ignore);
 
     return transformed;
 }
 
-function convertWord(word: string, ignore: string[]): string {
+function wordToTitleCase(word: string, ignore: string[]): string {
     if (word.length > 0) {
         // convert to lowercase
         word = word.toLocaleLowerCase();
