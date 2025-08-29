@@ -78,7 +78,9 @@ export default class TextTransform extends Plugin {
             editorCallback: (editor) => {
                 if (editor.hasFocus()) {
                     const info = this.getSelectionInfo(editor);
-                    const newText = changeTextCase(info.selectedText, TextCase.PascalCase, this.settings.wordBoundaryChars, this.settings.titleCaseIgnore);
+                    const newText = changeTextCase(info.selectedText, TextCase.PascalCase, this.settings.wordBoundaryChars, this.settings.titleCaseIgnore)
+                        // Remove all spaces that aren't leading/trailing
+                        .replace(/(?<=\S)\s+(?=\S)/g, "");
                     this.replaceSelection(editor, newText, info);
                 }
             },
