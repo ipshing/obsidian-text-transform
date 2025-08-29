@@ -1,7 +1,7 @@
 {
     "name": "obsidian-text-transform",
-    "version": "1.4.0",
-    "description": "Adds formatting features to transform text casing.",
+    "version": "1.4.1",
+    "description": "Transform text to different cases using the command palette or keyboard shortcuts.",
     "main": "main.js",
     "scripts": {
         "dev": "rollup --config rollup.config.js -w",
